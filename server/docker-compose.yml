@@ -1,0 +1,19 @@
+name: financeflow
+services:
+  redis:
+    image: "redis:alpine"
+  db:
+    image: "postgres:18-alpine"
+    container_name: financeflow
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: financeflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - financeflow_data:/var/lib/postgresql/data
+
+volumes:
+  financeflow_data:
