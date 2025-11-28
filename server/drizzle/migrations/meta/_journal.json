@@ -5,8 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1764172991776,
-      "tag": "20251126160311_cheerful_kronos",
+      "when": 1764351092946,
+      "tag": "20251128173132_add_users_accounts_transactions_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764351196917,
+      "tag": "20251128173316_add_transaction_type_column",
       "breakpoints": true
     }
   ]

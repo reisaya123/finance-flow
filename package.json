@@ -6,6 +6,7 @@
     "server": "npm run --prefix client dev",
     "db:migrate": "npm run --prefix server db:migrate",
     "db:generate": "npm run --prefix server db:generate",
+    "db:drop": "npm run --prefix server db:drop",
     "docker:up": "docker compose -f server/docker-compose.yml up -d",
     "docker:down": "docker compose -f server/docker-compose.yml down",
     "install:all": "npm install && npm --prefix server install && npm --prefix client install"
