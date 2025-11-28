@@ -1,5 +1,6 @@
 import {
   integer,
+  pgEnum,
   pgTable,
   text,
   timestamp,
@@ -10,7 +11,6 @@ export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
-  income: integer().notNull().default(0),
   createdAt: timestamp({ withTimezone: true })
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -35,12 +35,18 @@ export const accountsTable = pgTable("accounts", {
     .notNull(),
 });
 
+export const transactionTypeEnum = pgEnum("transactionType", [
+  "income",
+  "expense",
+]);
+
 export const transactionsTable = pgTable("transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer()
     .notNull()
     .references(() => usersTable.id),
   title: varchar({ length: 255 }).notNull(),
+  type: transactionTypeEnum().notNull(),
   amount: integer().notNull(),
   description: text(),
   date: timestamp({ withTimezone: true }).notNull(),
