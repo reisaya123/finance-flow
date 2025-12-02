@@ -9,7 +9,8 @@
     "db:drop": "npm run --prefix server db:drop",
     "docker:up": "docker compose -f server/docker-compose.yml up -d",
     "docker:down": "docker compose -f server/docker-compose.yml down",
-    "install:all": "npm install && npm --prefix server install && npm --prefix client install"
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "lint": "npm run --prefix server lint && npm run --prefix client lint"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
