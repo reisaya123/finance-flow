@@ -2,8 +2,8 @@
   "name": "finance-flow-root",
   "scripts": {
     "dev": "npm run docker:up && concurrently --kill-others \"npm run server\" \"npm run client\"",
-    "client": "npm run --prefix server dev",
-    "server": "npm run --prefix client dev",
+    "server": "npm run --prefix server dev",
+    "client": "npm run --prefix client dev",
     "db:migrate": "npm run --prefix server db:migrate",
     "db:generate": "npm run --prefix server db:generate",
     "db:drop": "npm run --prefix server db:drop",
