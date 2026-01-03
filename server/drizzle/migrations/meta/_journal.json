@@ -5,15 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1764351092946,
-      "tag": "20251128173132_add_users_accounts_transactions_tables",
+      "when": 1767433348274,
+      "tag": "20260103094228_add_user_account_session_tables",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1764351196917,
-      "tag": "20251128173316_add_transaction_type_column",
+      "when": 1767433401963,
+      "tag": "20260103094321_add_transactions_table",
       "breakpoints": true
     }
   ]
