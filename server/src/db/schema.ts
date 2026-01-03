@@ -1,50 +1,81 @@
+import { relations } from "drizzle-orm";
 import {
-  integer,
-  pgEnum,
   pgTable,
   text,
   timestamp,
+  boolean,
+  index,
+  pgEnum,
+  integer,
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
-  createdAt: timestamp({ withTimezone: true })
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp({ withTimezone: true })
-    .$defaultFn(() => /* @__PURE__ */ new Date())
+export const user = pgTable("users", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  image: text("image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
 
-// Separate users table and account table to support multiple auth providers as well as improve security.
-export const accountsTable = pgTable("accounts", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
-    .notNull()
-    .references(() => usersTable.id),
-  provider: varchar({ length: 255 }).notNull(),
-  hashedPassword: varchar({ length: 255 }).notNull(),
-  createdAt: timestamp({ withTimezone: true })
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp({ withTimezone: true })
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+export const session = pgTable(
+  "session",
+  {
+    id: text("id").primaryKey(),
+    expiresAt: timestamp("expires_at").notNull(),
+    token: text("token").notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+  },
+  (table) => [index("session_userId_idx").on(table.userId)]
+);
+
+export const account = pgTable(
+  "account",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    idToken: text("id_token"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at"),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+    scope: text("scope"),
+    password: text("password"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("account_userId_idx").on(table.userId)]
+);
 
 export const transactionTypeEnum = pgEnum("transactionType", [
   "income",
   "expense",
 ]);
 
-export const transactionsTable = pgTable("transactions", {
+export const transactions = pgTable("transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer()
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => user.id),
   title: varchar({ length: 255 }).notNull(),
   type: transactionTypeEnum().notNull(),
   amount: integer().notNull(),
@@ -57,3 +88,29 @@ export const transactionsTable = pgTable("transactions", {
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  user: one(user, {
+    fields: [transactions.userId],
+    references: [user.id],
+  }),
+}));
+
+export const userRelations = relations(user, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id],
+  }),
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+}));
